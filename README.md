@@ -55,8 +55,7 @@ Huedini is built with modern, robust technologies:
       * [TypeScript](https://www.typescriptlang.org/) - A superset of JavaScript that adds static types, enhancing code quality and maintainability.
       * [Vite](https://vitejs.dev/) - A blazing-fast build tool that provides a rapid development experience.
       * [Tailwind CSS](https://tailwindcss.com/) - A utility-first CSS framework for rapidly building custom designs.
-  * **Color Science Engine:** (Mention any specific libraries or custom implementations here, e.g., `Chroma.js`, `Color.js`, or a custom algorithm)
-      * *Example:* Custom algorithms for color harmony and gradient interpolation.
+  * **Color Science Engine:** Custom algorithms all throughout.
 
 ## ⬇️ Local Development
 

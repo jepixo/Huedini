@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
-import { GoogleGenAI, Type } from "@google/genai";
 
 // --- TYPE DEFINITIONS ---
 type Style = 'Harmonious' | 'Vibrant' | 'Pastel' | 'Dark' | 'Warm' | 'Cool' | 'Duotone' | 'Brands';
@@ -240,40 +239,93 @@ const createGradientFromPalette = (palette: string[], style: Style): Gradient =>
 
 const randomHex = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
 
-// --- Gemini API ---
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// --- Palette Extraction from Image (Client-side) ---
+const extractPaletteFromImage = (base64Image: string): Promise<string[]> => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 100;
+            const MAX_HEIGHT = 100;
+            let width = img.width;
+            let height = img.height;
 
-const extractPaletteFromImage = async (base64Image: string): Promise<string[]> => {
-    try {
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: {
-                parts: [
-                    { inlineData: { mimeType: 'image/jpeg', data: base64Image } },
-                    { text: `Extract a color palette of 6 harmonious colors from this image. The colors should be representative of the image's mood and dominant tones. Return the result as a JSON array of hex color strings. Example: ["#B8A18A", "#2E3B42", "#E1D6C9", "#5F747A", "#A1B0B6", "#46545A"]` }
-                ]
-            },
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: {
-                    type: Type.ARRAY,
-                    items: {
-                        type: Type.STRING,
-                        description: 'A hex color code string'
-                    }
+            if (width > height) {
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+            } else {
+                if (height > MAX_HEIGHT) {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
                 }
             }
-        });
-        const jsonStr = response.text.trim();
-        const colors = JSON.parse(jsonStr);
-        if (Array.isArray(colors) && colors.every(c => typeof c === 'string' && /^#([0-9A-F]{3}){1,2}$/i.test(c))) {
-            return colors;
-        }
-        throw new Error("Invalid color format returned.");
-    } catch (error) {
-        console.error("Error extracting palette from image:", error);
-        throw new Error("Could not extract colors from the image. Please try a different one.");
-    }
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                return reject(new Error("Could not get canvas context"));
+            }
+            ctx.drawImage(img, 0, 0, width, height);
+
+            try {
+                const imageData = ctx.getImageData(0, 0, width, height).data;
+                const colorMap: { [key: string]: { r: number, g: number, b: number, count: number } } = {};
+                
+                // Use a reduced color space for binning
+                const BITS = 4; // 16 colors per channel, 4096 total
+                const SHIFT = 8 - BITS;
+
+                for (let i = 0; i < imageData.length; i += 4) {
+                    // Sample every pixel for small canvas
+                    const r = imageData[i];
+                    const g = imageData[i + 1];
+                    const b = imageData[i + 2];
+                    const a = imageData[i + 3];
+
+                    if (a < 128) continue; // Skip transparent pixels
+
+                    const rKey = r >> SHIFT;
+                    const gKey = g >> SHIFT;
+                    const bKey = b >> SHIFT;
+                    const key = `${rKey},${gKey},${bKey}`;
+
+                    if (!colorMap[key]) {
+                        colorMap[key] = { r: 0, g: 0, b: 0, count: 0 };
+                    }
+                    colorMap[key].r += r;
+                    colorMap[key].g += g;
+                    colorMap[key].b += b;
+                    colorMap[key].count++;
+                }
+
+                const sortedColors = Object.values(colorMap)
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 6) // Get top 6 colors
+                    .map(color => {
+                        const avgR = Math.round(color.r / color.count);
+                        const avgG = Math.round(color.g / color.count);
+                        const avgB = Math.round(color.b / color.count);
+                        return rgbToHex(avgR, avgG, avgB);
+                    });
+
+                if (sortedColors.length === 0) {
+                     return reject(new Error("Could not find any dominant colors in the image."));
+                }
+
+                resolve(sortedColors);
+
+            } catch (error) {
+                reject(new Error("Could not process image data. The image might be from a different origin."));
+            }
+        };
+        img.onerror = () => {
+            reject(new Error("Failed to load the image."));
+        };
+        img.src = `data:image/jpeg;base64,${base64Image}`;
+    });
 };
 
 const blobToBase64 = (blob: Blob): Promise<string> => {
@@ -977,8 +1029,8 @@ const TrendingView: React.FC<Omit<GeneratorPropsType, 'generatorState' | 'onStat
     const favoritePalettesSet = useMemo(() => new Set(favorites.palettes.map(p => p.colors.join('-'))), [favorites.palettes]);
 
 
-    useEffect(() => {
-        fetch('/trending.json')
+    useEffect(() => {// will be '/Huedini/' after build
+        fetch(`${import.meta.env.BASE_URL}trending.json`)
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
