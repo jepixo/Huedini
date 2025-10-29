@@ -78,10 +78,6 @@ To get Huedini up and running on your local machine for development or contribut
     ```
     Huedini will now be running on `http://localhost:5173` (or another port specified by Vite).
 
-## 🤝 Contributing
-
-We welcome contributions\! If you have suggestions, bug reports, or want to contribute code, please check out our [Contributing Guidelines](https://www.google.com/search?q=CONTRIBUTING.md) (create this file if it doesn't exist).
-
 ## 📄 License
 
 This project is licensed under the [MIT License](https://www.google.com/search?q=LICENSE) - see the `LICENSE` file for details.
