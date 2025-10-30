@@ -3,20 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/x-icon" href="/Huedini/favicon.ico">
   <title>Huedini - Gradient & Palette Generator</title>
+  <link rel="icon" href="/Huedini/favicon.ico" type="image/x-icon">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
     :root {
       --background: #121212;
       --surface: #1e1e1e;
-      --primary: #bb86fc;
+      --gradient-primary: linear-gradient(90deg, #ff8c00, #ffc837, #ff8c00);
+      --accent-solid: #ffc837;
       --on-background: #e0e0e0;
       --on-surface: #c7c7c7;
       --card-border: #2a2a2a;
       --shadow-color: rgba(0, 0, 0, 0.5);
       --danger: #ef5350;
+    }
+
+    @keyframes gradient-animation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     * {
@@ -61,22 +68,37 @@
     }
 
     .nav-btn:hover {
-      border-color: var(--primary);
-      color: var(--primary);
+      border-color: var(--accent-solid);
+      color: var(--accent-solid);
     }
 
     .nav-btn.active {
-      background-color: var(--primary);
-      border-color: var(--primary);
+      background-image: var(--gradient-primary);
+      background-size: 200% auto;
+      animation: gradient-animation 3s ease-in-out infinite;
+      border-color: transparent;
       color: #000;
+    }
+
+    .title-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .logo {
+      width: 50px;
+      height: 50px;
     }
 
     h1 {
       font-size: 2.5rem;
       font-weight: 700;
-      text-align: center;
-      margin-bottom: 0.5rem;
-      background: -webkit-linear-gradient(45deg, #bb86fc, #6200ee, #03dac6);
+      background: linear-gradient(45deg, #ff8c00, #ffc837, #f9d29d);
+      background-size: 200% auto;
+      animation: gradient-animation 4s linear infinite;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -171,7 +193,7 @@
     }
 
     .mode-toggle button.active {
-        background-color: var(--primary);
+        background-color: var(--accent-solid);
         color: #000;
     }
 
@@ -207,9 +229,11 @@
     }
 
     .filter-btn.active {
-      background-color: var(--primary);
+      background-image: var(--gradient-primary);
+      background-size: 200% auto;
+      animation: gradient-animation 3s ease-in-out infinite;
       color: #000;
-      border-color: var(--primary);
+      border-color: transparent;
       font-weight: 600;
     }
 
@@ -279,7 +303,7 @@
     }
 
     button, .button-like {
-      background-color: var(--primary);
+      background-color: var(--accent-solid);
       color: #000;
       border: none;
       border-radius: 8px;
@@ -288,7 +312,7 @@
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.2s ease, transform 0.2s ease;
+      transition: all 0.2s ease;
       text-align: center;
       display: flex;
       align-items: center;
@@ -297,6 +321,8 @@
     }
 
     .button-like.secondary {
+      background-image: none;
+      animation: none;
       background-color: var(--surface);
       border: 1px solid var(--card-border);
       color: var(--on-surface);
@@ -305,18 +331,23 @@
     .button-like.secondary:hover {
        background-color: #2a2a2a;
        border-color: #444;
+       filter: none;
+       transform: translateY(-2px);
     }
 
     button:hover:not(:disabled) {
-      background-color: #a764fa;
       transform: translateY(-2px);
+      filter: brightness(1.1);
     }
 
     button:disabled {
+      background-image: none;
       background-color: #333;
       color: #777;
       cursor: not-allowed;
       transform: none;
+      filter: none;
+      animation: none;
     }
 
     .grid-container {
@@ -477,7 +508,7 @@
     }
 
     .card-action-button.saved {
-      background-color: var(--primary);
+      background-color: var(--accent-solid);
       color: #000;
     }
 
@@ -523,7 +554,7 @@
 
     .palette-swatch:hover {
         transform: scale(1.1);
-        border-color: var(--primary);
+        border-color: var(--accent-solid);
     }
 
     .palette-swatch .remove-swatch {
@@ -571,8 +602,8 @@
     }
 
     .add-swatch-btn:hover {
-        border-color: var(--primary);
-        color: var(--primary);
+        border-color: var(--accent-solid);
+        color: var(--accent-solid);
     }
 
     .extract-from-image-container {
@@ -725,7 +756,7 @@
     .spinner {
       border: 3px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
-      border-top: 3px solid var(--primary);
+      border-top: 3px solid var(--accent-solid);
       width: 16px;
       height: 16px;
       animation: spin 1s linear infinite;
@@ -746,18 +777,13 @@
 
     @media (max-width: 600px) {
         nav {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 0.5rem;
             margin-bottom: 1rem;
-        }
-        nav::-webkit-scrollbar {
-            display: none;
         }
         .nav-btn {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
-            flex-shrink: 0;
         }
         #root {
             padding: 1rem;
@@ -781,7 +807,6 @@
 
   </style>
 
-<!-- <link rel="stylesheet" href="/index.css"> -->
 <script type="importmap">
 {
   "imports": {
@@ -792,7 +817,7 @@
   }
 }
 </script>
-  <script type="module" crossorigin src="/Huedini/assets/index-PFJwTTpp.js"></script>
+  <script type="module" crossorigin src="/Huedini/assets/index-BQeP0M46.js"></script>
 </head>
 <body>
   <div id="root"></div>
