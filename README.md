@@ -1,6 +1,6 @@
 # 🌈 Huedini - The Gradient & Palette Wizard
 
-Huedini is an intuitive, powerful web application crafted for designers and developers to effortlessly discover, generate, and implement stunning color gradients and harmonious palettes. Leveraging a sophisticated color science engine, Huedini transcends simple random generation, offering aesthetically pleasing combinations rooted in established color theory.
+[Huedini](https://jepixo.github.io/Huedini/) is an intuitive, powerful web application crafted for designers and developers to effortlessly discover, generate, and implement stunning color gradients and harmonious palettes. Leveraging a sophisticated color science engine, Huedini transcends simple random generation, offering aesthetically pleasing combinations rooted in established color theory.
 
 Built with **TypeScript** and **React**, Huedini delivers a robust, scalable, and delightful user experience.
 

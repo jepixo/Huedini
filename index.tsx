@@ -1029,7 +1029,7 @@ const TrendingView: React.FC<Omit<GeneratorPropsType, 'generatorState' | 'onStat
     const favoritePalettesSet = useMemo(() => new Set(favorites.palettes.map(p => p.colors.join('-'))), [favorites.palettes]);
 
 
-    useEffect(() => {// will be '/Huedini/' after build
+    useEffect(() => {
         fetch(`${import.meta.env.BASE_URL}trending.json`)
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
@@ -1152,7 +1152,7 @@ const App: React.FC = () => {
   const [favorites, setFavorites] = useState<Favorites>({ gradients: [], palettes: [] });
   const [generatorState, setGeneratorState] = useState<GeneratorConfig>({
     mode: 'single',
-    palette: ['#bb86fc'],
+    palette: ['#ff8c00'],
     suggestionCount: 8,
     gradientMinColors: 2,
     gradientMaxColors: 5,
@@ -1211,7 +1211,10 @@ const App: React.FC = () => {
           <button className={`nav-btn ${mode === 'trending' ? 'active' : ''}`} onClick={() => setMode('trending')}>Trending</button>
           <button className={`nav-btn ${mode === 'favorites' ? 'active' : ''}`} onClick={() => setMode('favorites')}>Favorites</button>
       </nav>
-      <h1>Huedini</h1>
+      <div className="title-container">
+        <img src="huediniproto.png" alt="Huedini Logo" className="logo" />
+        <h1>Huedini</h1>
+      </div>
       <p className="subtitle">{getSubtitle()}</p>
       {renderContent()}
     </>
